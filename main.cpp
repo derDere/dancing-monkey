@@ -29,11 +29,23 @@ bool exists(string name);
  */
 int main(int argc, char* argv[]) {
   bool isDebug = false;
+  bool allowExit = true;
 
   if (argc > 1) {
     for (int i = 1; i < argc; i++) {
       if (string(argv[i]) == "-d" || string(argv[i]) == "--debug" || string(argv[i]) == "debug") {
         isDebug = true;
+      }
+      if (string(argv[i]) == "-nq" || string(argv[i]) == "--no-quit" || string(argv[i]) == "-ne" || string(argv[i]) == "--no-exit") {
+        allowExit = false;
+      }
+      if (string(argv[i]) == "-h" || string(argv[i]) == "--help" || string(argv[i]) == "help") {
+        cout << "Usage: " << APP << " [options]" << endl;
+        cout << "Options:" << endl;
+        cout << "  -d, --debug    Enable debug mode" << endl;
+        cout << "  -nq, --no-quit Disable the exit by pressing 'q' or 'Q'" << endl;
+        cout << "  -h, --help     Show this help message" << endl;
+        return 0;
       }
     }
   }
@@ -48,7 +60,7 @@ int main(int argc, char* argv[]) {
   noecho();
   cbreak();
   keypad(stdscr, true);
-  //mousemask(BUTTON1_CLICKED, NULL); //ALL_MOUSE_EVENTS, NULL);
+  mousemask(BUTTON1_CLICKED, NULL); //ALL_MOUSE_EVENTS, NULL);
 
   nodelay(win, true);
 
@@ -80,17 +92,36 @@ int main(int argc, char* argv[]) {
     mvaddstr(y + MONKEY_HEIGHT + 3, x, "Take a look at this");
     mvaddstr(y + MONKEY_HEIGHT + 4, x, "  dancing monkey!");
 
-    if (isDebug) {
+    // Print exit msg
+    if (allowExit) {
+      mvaddstr(0, 0, "(Q)uit");
+
       if (input == 'q' || input == 'Q' || input == 27) {
         break;
       }
 
-      // if size of the terminal has changed
-      if (input == KEY_RESIZE) {
-        clear();
-        getmaxyx(stdscr, height, width);
-        calcCenter(width, height, x, y);
+      // if mouse is clicked
+      if (input == KEY_MOUSE) {
+        MEVENT event;
+        if (getmouse(&event) == OK) {
+          if (event.bstate & BUTTON1_CLICKED) {
+            int mpx, mpy;
+            mpx = event.x;
+            mpy = event.y;
+            if (mpx >= 0 && mpx < 6 && mpy == 0) {
+              break;
+            }
+          }
+        }
       }
+
+    }
+
+    // if size of the terminal has changed
+    if (input == KEY_RESIZE) {
+      clear();
+      getmaxyx(stdscr, height, width);
+      calcCenter(width, height, x, y);
     }
 
     // Check if the file exists
@@ -120,3 +151,27 @@ void calcCenter(int width, int height, int& x, int& y) {
 void quit() {
   endwin();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// EOF
