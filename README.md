@@ -4,6 +4,8 @@
 
 A simple C++ program that displays a dancing monkey in the terminal.
 
+Created with [Ascii-Art-Animator](https://github.com/derDere/ascii-art-animator).
+
 ## Installation
 
 ```bash
