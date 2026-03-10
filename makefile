@@ -5,7 +5,7 @@ All: $(APP)
 	@echo Done
 
 $(APP): $(SRC)
-	g++ -o $(APP) $(SRC) -lncursesw
+	g++ -o $(APP) $(SRC) -D_XOPEN_SOURCE_EXTENDED -lncursesw
 
 test: $(APP)
 	./$(APP) debug
